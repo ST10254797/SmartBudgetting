@@ -11,6 +11,11 @@
         android:layout_height="wrap_content"
         android:paddingBottom="8dp">
 
+        <!-- Spacer to move everything lower -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="24dp" />
+
         <!-- Budget Warning -->
         <TextView
             android:id="@+id/budgetWarningTextView"
@@ -77,7 +82,6 @@
                 android:layout_height="48dp"
                 android:text="Save Expense"
                 android:layout_marginEnd="4dp"/>
-
         </LinearLayout>
 
         <!-- Expenses List -->
@@ -165,7 +169,7 @@
                 android:text="Clear"/>
         </LinearLayout>
 
-        <!-- Return Button (Moved Below Filters) -->
+        <!-- Return Button -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

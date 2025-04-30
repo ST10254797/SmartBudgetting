@@ -148,9 +148,11 @@ class CategoryActivity : AppCompatActivity() {
                     categories.forEachIndexed { index, category ->
                         launch {
                             val expenses = fetchExpensesForCategory(userId, category.id)
+                            val total = expenses.sumOf { it.amount } // Calculate total
 
                             withContext(Dispatchers.Main) {
-                                displayText.append("Category: ${category.name}\n")
+                                // Display category name with total
+                                displayText.append("${category.name} (Total: R${"%.2f".format(total)})\n")
 
                                 if (expenses.isEmpty()) {
                                     displayText.append("  No expenses\n")
@@ -171,6 +173,7 @@ class CategoryActivity : AppCompatActivity() {
             }
         }
     }
+
     // Add this suspend function
     private suspend fun fetchExpensesForCategory(userId: String, categoryId: Long): List<Expense> {
         return withContext(Dispatchers.IO) {
