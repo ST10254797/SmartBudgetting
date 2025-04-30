@@ -132,44 +132,51 @@ class CategoryActivity : AppCompatActivity() {
     private fun updateCategoryList() {
         val userId = auth.currentUser?.uid ?: return
 
-        lifecycleScope.launch(Dispatchers.IO) {
-            val categories = categoryDao.getCategoriesByUser(userId)
+        binding.textViewCategories.text = "Loading..."
 
-            withContext(Dispatchers.Main) {
-                binding.textViewCategories.text = "Loading..."
-                val displayText = StringBuilder()
+        lifecycleScope.launch {
+            try {
+                // Load all data in one IO operation
+                val categoriesWithExpenses = withContext(Dispatchers.IO) {
+                    val categories = categoryDao.getCategoriesByUser(userId)
 
-                if (categories.isEmpty()) {
-                    binding.textViewCategories.text = "No categories found."
-                    return@withContext
-                }
+                    if (categories.isEmpty()) {
+                        return@withContext emptyList()
+                    }
 
-                coroutineScope {
-                    categories.forEachIndexed { index, category ->
-                        launch {
-                            val expenses = fetchExpensesForCategory(userId, category.id)
-                            val total = expenses.sumOf { it.amount } // Calculate total
-
-                            withContext(Dispatchers.Main) {
-                                // Display category name with total
-                                displayText.append("${category.name} (Total: R${"%.2f".format(total)})\n")
-
-                                if (expenses.isEmpty()) {
-                                    displayText.append("  No expenses\n")
-                                } else {
-                                    expenses.forEach { expense ->
-                                        displayText.append("  • R${"%.2f".format(expense.amount)} - ${expense.description}\n")
-                                    }
-                                }
-                                displayText.append("\n")
-
-                                if (index == categories.lastIndex) {
-                                    binding.textViewCategories.text = displayText.toString()
-                                }
-                            }
-                        }
+                    categories.map { category ->
+                        val expenses = expenseDao.getExpensesByCategory(category.id, userId)
+                        val total = expenses.sumOf { it.amount }
+                        CategoryWithExpenses(category, expenses, total)
                     }
                 }
+
+                // Update UI once with all data
+                if (categoriesWithExpenses.isEmpty()) {
+                    binding.textViewCategories.text = "No categories found."
+                    return@launch
+                }
+
+                val displayText = buildString {
+                    categoriesWithExpenses.forEach { (category, expenses, total) ->
+                        append("${category.name} (Total: R${"%.2f".format(total)})\n")
+
+                        if (expenses.isEmpty()) {
+                            append("  No expenses\n")
+                        } else {
+                            expenses.forEach { expense ->
+                                append("  • R${"%.2f".format(expense.amount)} - ${expense.description}\n")
+                            }
+                        }
+                        append("\n")
+                    }
+                }
+
+                binding.textViewCategories.text = displayText
+
+            } catch (e: Exception) {
+                showToast("Error loading categories: ${e.message}")
+                binding.textViewCategories.text = "Error loading data"
             }
         }
     }
@@ -215,4 +222,9 @@ class CategoryActivity : AppCompatActivity() {
             }
         }
     }
+    private data class CategoryWithExpenses(
+        val category: Category,
+        val expenses: List<Expense>,
+        val total: Double,
+    )
 }
