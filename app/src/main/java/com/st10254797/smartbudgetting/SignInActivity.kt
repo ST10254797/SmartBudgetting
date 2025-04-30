@@ -2,12 +2,13 @@ package com.st10254797.smartbudgetting
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Patterns
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.*
 import com.st10254797.smartbudgetting.databinding.ActivitySignInBinding
 
 class SignInActivity : AppCompatActivity() {
@@ -24,33 +25,52 @@ class SignInActivity : AppCompatActivity() {
 
         firebaseAuth = FirebaseAuth.getInstance()
 
-        // Go to Sign Up page
+        // Navigate to Sign Up
         binding.textView.setOnClickListener {
             val intent = Intent(this, SignUpActivity::class.java)
             startActivity(intent)
         }
 
-        // Handle Sign In
+        // Handle Sign In button click
         binding.button.setOnClickListener {
-            val email = binding.emailEt.text.toString()
-            val pass = binding.passET.text.toString()
+            val email = binding.emailEt.text.toString().trim()
+            val pass = binding.passET.text.toString().trim()
 
-            if (email.isNotEmpty() && pass.isNotEmpty()) {
-                firebaseAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener {
-                    if (it.isSuccessful) {
-                        val intent = Intent(this, MainActivity::class.java)
-                        startActivity(intent)
-                        finish()
-                    } else {
-                        Toast.makeText(this, it.exception?.message ?: "Sign in failed", Toast.LENGTH_SHORT).show()
+            // Field validation
+            if (email.isEmpty() || pass.isEmpty()) {
+                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                Toast.makeText(this, "Please enter a valid email address", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (pass.length < 6) {
+                Toast.makeText(this, "Password must be at least 6 characters", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // Attempt Firebase sign-in
+            firebaseAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener {
+                if (it.isSuccessful) {
+                    val intent = Intent(this, MainActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                } else {
+                    val errorMessage = when (val exception = it.exception) {
+                        is FirebaseAuthInvalidCredentialsException -> "Incorrect password."
+                        is FirebaseAuthInvalidUserException -> "No account found with this email."
+                        is FirebaseAuthException -> "Authentication error: ${exception.localizedMessage}"
+                        else -> "Sign in failed: ${exception?.localizedMessage ?: "Unknown error"}"
                     }
+                    Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show()
                 }
-            } else {
-                Toast.makeText(this, "Empty Fields Are not Allowed !!", Toast.LENGTH_SHORT).show()
             }
         }
 
-        // Handle insets for edge-to-edge layout
+        // Edge-to-edge insets
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -60,7 +80,6 @@ class SignInActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-
         if (firebaseAuth.currentUser != null) {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
