@@ -279,6 +279,10 @@ class ExpenseActivity : AppCompatActivity() {
         startDateEditText.text.clear()
         endDateEditText.text.clear()
 
+        // Clear the category totals view
+        val categoryTotalsLayout: LinearLayout = findViewById(R.id.categoryTotalsLayout)
+        categoryTotalsLayout.removeAllViews()
+
         // Reload all expenses without any filter
         loadExpensesForCategory(selectedCategoryId)
     }
@@ -303,7 +307,7 @@ class ExpenseActivity : AppCompatActivity() {
         // Display the totals for each category
         for ((category, totalAmount) in categoryTotals) {
             val textView = TextView(this)
-            textView.text = "$category: $%.2f".format(totalAmount)
+            textView.text = "$category: R%.2f".format(totalAmount)
             categoryTotalsLayout.addView(textView)
         }
     }

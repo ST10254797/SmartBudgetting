@@ -1,189 +1,232 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
+    android:background="#121212"
     android:padding="8dp">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="8dp">
+        android:layout_height="wrap_content">
 
-        <!-- Spacer to move everything lower -->
+        <!-- Add top spacing to push content down -->
         <View
             android:layout_width="match_parent"
             android:layout_height="24dp" />
 
-        <!-- Budget Warning -->
-        <TextView
-            android:id="@+id/budgetWarningTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@android:color/holo_red_dark"
-            android:textSize="14sp"
-            android:visibility="gone"
-            android:text="This expense exceeds your budget!"
-            android:layout_marginBottom="4dp" />
-
-        <!-- Input Fields -->
-        <EditText
-            android:id="@+id/amountEditText"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:hint="Amount"
-            android:inputType="numberDecimal" />
-
-        <EditText
-            android:id="@+id/descriptionEditText"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:hint="Description" />
-
-        <EditText
-            android:id="@+id/dateEditText"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:hint="Date (yyyy-MM-dd)"
-            android:inputType="date" />
-
-        <Spinner
-            android:id="@+id/categorySpinner"
-            android:layout_width="match_parent"
-            android:layout_height="48dp" />
-
-        <!-- Image Section -->
-        <Button
-            android:id="@+id/uploadImageBtn"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:text="Upload Image (optional)" />
-
-        <ImageView
-            android:id="@+id/imagePreview"
-            android:layout_width="match_parent"
-            android:layout_height="120dp"
-            android:scaleType="centerCrop"
-            android:visibility="gone"
-            android:background="@android:color/darker_gray"
-            android:contentDescription="Selected image preview" />
-
-        <!-- Action Buttons -->
         <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="8dp">
+            android:paddingBottom="8dp"
+            android:importantForAccessibility="yes">
 
-            <Button
-                android:id="@+id/saveExpenseBtn"
+            <!-- Budget Warning -->
+            <TextView
+                android:id="@+id/budgetWarningTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/holo_red_dark"
+                android:textSize="16sp"
+             android:textStyle="bold"
+             android:visibility="gone"
+             android:text="This expense exceeds your budget!"
+             android:layout_marginBottom="4dp"
+             android:padding="8dp"
+             android:background="#FFEBEE" />
+
+
+            <!-- Input Fields -->
+            <EditText
+                android:id="@+id/amountEditText"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:text="Save Expense"
-                android:layout_marginEnd="4dp"/>
-        </LinearLayout>
-
-        <!-- Expenses List -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Expenses"
-            android:textStyle="bold"
-            android:textSize="18sp"
-            android:layout_marginTop="8dp" />
-
-        <ListView
-            android:id="@+id/expensesListView"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:divider="@android:color/darker_gray"
-            android:dividerHeight="1dp" />
-
-        <!-- Category Totals -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Category Totals"
-            android:textStyle="bold"
-            android:textSize="18sp"
-            android:layout_marginTop="8dp" />
-
-        <LinearLayout
-            android:id="@+id/categoryTotalsLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="4dp"
-            android:background="@android:color/white"
-            android:elevation="1dp">
-            <!-- Category totals will be added here -->
-        </LinearLayout>
-
-        <!-- Date Filters -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="8dp">
+                android:hint="Amount"
+                android:inputType="numberDecimal"
+                android:background="#FFFFFF"
+                android:textColor="#000000"
+                android:autofillHints="amount" />
 
             <EditText
-                android:id="@+id/startDateEditText"
-                android:layout_width="0dp"
+                android:id="@+id/descriptionEditText"
+                android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:layout_weight="1"
-                android:hint="Start Date"
+                android:hint="Description"
+                android:background="#FFFFFF"
+                android:textColor="#000000"
+                android:autofillHints="description" />
+
+            <!-- Date Input -->
+            <EditText
+                android:id="@+id/dateEditText"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:hint="Date (yyyy-MM-dd)"
                 android:inputType="date"
-                android:layout_marginEnd="4dp"/>
+                android:background="#FFFFFF"
+                android:textColor="#000000"
+                android:autofillHints="expenseDate"
+                android:accessibilityLiveRegion="polite" />
 
-            <EditText
-                android:id="@+id/endDateEditText"
-                android:layout_width="0dp"
+            <Spinner
+                android:id="@+id/categorySpinner"
+                android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:layout_weight="1"
-                android:hint="End Date"
-                android:inputType="date"/>
-        </LinearLayout>
+                android:background="#FFFFFF" />
 
-        <!-- Filter Buttons -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="8dp"
-            android:gravity="center">
-
+            <!-- Image Section -->
             <Button
-                android:id="@+id/filterDateButton"
-                android:layout_width="0dp"
+                android:id="@+id/uploadImageBtn"
+                android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:layout_weight="1"
-                android:text="Filter"
-                android:layout_marginEnd="4dp"/>
+                android:text="Upload Image (optional)"
+                android:backgroundTint="#43A047"
+                android:textColor="#FFFFFF" />
 
-            <Button
-                android:id="@+id/clearFilterButton"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                android:text="Clear"/>
+            <ImageView
+                android:id="@+id/imagePreview"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:scaleType="centerCrop"
+                android:visibility="gone"
+                android:background="#616161"
+                android:contentDescription="Selected image preview" />
+
+            <!-- Action Buttons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
+
+                <Button
+                    android:id="@+id/saveExpenseBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="Save Expense"
+                    android:layout_marginEnd="4dp"
+                    android:backgroundTint="#43A047"
+                    android:textColor="#FFFFFF" />
+            </LinearLayout>
+
+            <!-- Expenses List -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Expenses"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:textColor="#FFFFFF"
+                android:layout_marginTop="8dp" />
+
+            <ListView
+                android:id="@+id/expensesListView"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:divider="#757575"
+                android:dividerHeight="1dp"
+                android:background="#424242" />
+
+            <!-- Category Totals -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Category Totals"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:textColor="#FFFFFF"
+                android:layout_marginTop="8dp" />
+
+            <LinearLayout
+                android:id="@+id/categoryTotalsLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="4dp"
+                android:background="#FFFFFF"
+                android:elevation="1dp">
+                <!-- Optionally add white text if you keep dark background -->
+                <!-- android:textColor="#FFFFFF" in child TextViews -->
+            </LinearLayout>
+
+            <!-- Date Filters -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
+
+                <EditText
+                    android:id="@+id/startDateEditText"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:hint="Start Date"
+                    android:inputType="date"
+                    android:background="#FFFFFF"
+                    android:layout_marginEnd="4dp"
+                    android:autofillHints="filterStartDate"
+                    android:accessibilityLiveRegion="polite" />
+
+                <EditText
+                    android:id="@+id/endDateEditText"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:hint="End Date"
+                    android:inputType="date"
+                    android:background="#FFFFFF"
+                    android:autofillHints="filterEndDate"
+                    android:accessibilityLiveRegion="polite" />
+            </LinearLayout>
+
+            <!-- Filter Buttons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp"
+                android:gravity="center">
+
+                <Button
+                    android:id="@+id/filterDateButton"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:text="Filter"
+                    android:layout_marginEnd="4dp"
+                    android:backgroundTint="#43A047"
+                    android:textColor="#FFFFFF" />
+
+                <Button
+                    android:id="@+id/clearFilterButton"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:text="Clear"
+                    android:backgroundTint="#BDBDBD"
+                    android:textColor="#000000" />
+            </LinearLayout>
+
+            <!-- Return Button -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
+
+                <Button
+                    android:id="@+id/returnBtn"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:text="Return"
+                    android:backgroundTint="#43A047"
+                    android:textColor="#FFFFFF" />
+            </LinearLayout>
         </LinearLayout>
-
-        <!-- Return Button -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="8dp">
-
-            <Button
-                android:id="@+id/returnBtn"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                android:text="Return"
-                android:backgroundTint="@android:color/holo_blue_light" />
-        </LinearLayout>
-
     </LinearLayout>
 </ScrollView>
