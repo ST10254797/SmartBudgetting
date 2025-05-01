@@ -9,3 +9,4 @@ data class Goal(
     val minGoal: Float,
     val maxGoal: Float
 )
+//GeeksforGeeks, 2021.How to Perform CRUD Operations in Room Database in Android? [online] Available at: https://www.geeksforgeeks.org/how-to-perform-crud-operations-in-room-database-in-android/ (Accessed 28 April 2025)
