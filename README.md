@@ -38,10 +38,7 @@ Before installing or running the project, ensure you have the following:
 ## 🔽 Installing
 
 1. Clone the repository:
-
-bash
-git clone https://github.com/yourusername/smart-budgeting-app.git
-
+git clone https://github.com/ST10254797/SmartBudgetting.git
 
 2. Open the project in Android Studio.
 
@@ -139,8 +136,6 @@ Common Issues:
 - If login fails, check Firebase Authentication settings in the console.
 
 Useful command for logging Firebase debug:
-
-bash
 adb logcat | grep FirebaseAuth
 
 
@@ -197,8 +192,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 - Thanks to Android Developers and Kotlin Slack community.
 
 Tools and packages:
-
-- awesome-readme
 - PurpleBooth
 - Firebase Docs
 - Android Developer Docs
