@@ -152,7 +152,7 @@ adb logcat | grep FirebaseAuth
 - Ryan — ST10377479
 - Ethan — ST10279132
 
-Project maintained at: 
+Project maintained at: https://github.com/ST10254797/SmartBudgetting.git
 
 ---
 
@@ -184,6 +184,10 @@ Software, and to permit persons to whom the Software is furnished to do so,
 subject to the following conditions:
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED.
+
+---
+
+## 📹 Video Link
 
 ---
 
