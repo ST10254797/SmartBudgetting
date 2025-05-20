@@ -65,11 +65,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:hint="Date (yyyy-MM-dd)"
-                android:inputType="date"
                 android:background="#FFFFFF"
                 android:textColor="#000000"
                 android:autofillHints="expenseDate"
-                android:accessibilityLiveRegion="polite" />
+                android:accessibilityLiveRegion="polite"
+                android:focusable="false"
+                android:clickable="true"
+                android:drawableEnd="@android:drawable/ic_menu_my_calendar"
+                android:inputType="none" />
 
             <Spinner
                 android:id="@+id/categorySpinner"
@@ -165,11 +168,15 @@
                     android:layout_height="48dp"
                     android:layout_weight="1"
                     android:hint="Start Date"
-                    android:inputType="date"
                     android:background="#FFFFFF"
                     android:layout_marginEnd="4dp"
                     android:autofillHints="filterStartDate"
-                    android:accessibilityLiveRegion="polite" />
+                    android:accessibilityLiveRegion="polite"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:drawableEnd="@android:drawable/ic_menu_my_calendar"
+                    android:inputType="none" />
+
 
                 <EditText
                     android:id="@+id/endDateEditText"
@@ -177,10 +184,13 @@
                     android:layout_height="48dp"
                     android:layout_weight="1"
                     android:hint="End Date"
-                    android:inputType="date"
                     android:background="#FFFFFF"
                     android:autofillHints="filterEndDate"
-                    android:accessibilityLiveRegion="polite" />
+                    android:accessibilityLiveRegion="polite"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:drawableEnd="@android:drawable/ic_menu_my_calendar"
+                    android:inputType="none" />
             </LinearLayout>
 
             <!-- Filter Buttons -->
