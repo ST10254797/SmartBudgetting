@@ -88,8 +88,10 @@ class CategoryGraphActivity : AppCompatActivity() {
             xAxis.granularity = 1f
             xAxis.setDrawGridLines(false)
             xAxis.labelRotationAngle = -45f
-            xAxis.setLabelCount(labels.size)
+            xAxis.setLabelCount(labels.size, true)
             xAxis.textSize = 12f
+            xAxis.axisMinimum = -0.5f
+            xAxis.axisMaximum = entries.size - 0.5f
 
             // Setup Y-axis
             val yAxis = barChart.axisLeft
