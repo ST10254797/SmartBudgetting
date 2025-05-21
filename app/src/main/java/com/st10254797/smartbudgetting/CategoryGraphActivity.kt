@@ -30,6 +30,11 @@ class CategoryGraphActivity : AppCompatActivity() {
         barChart = findViewById(R.id.barChart)
         btnRefreshGraph = findViewById(R.id.btnRefreshGraph)  // Initialize button
 
+        val backButton: Button = findViewById(R.id.backButton)  // Initialize new back button
+        backButton.setOnClickListener {
+            finish()
+        }
+
         expenseDao = AppDatabase.getDatabase(this).expenseDao()
         goalDao = AppDatabase.getDatabase(this).goalDao()
 
