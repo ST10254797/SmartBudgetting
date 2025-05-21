@@ -52,14 +52,12 @@ class CategoryGraphActivity : AppCompatActivity() {
             val categoryTotals = expenseDao.getCategoryTotalsForUser(userId)
             val goal = goalDao.getGoalForUser(userId)
 
-            // Handle empty data
             if (categoryTotals.isEmpty()) {
                 barChart.clear()
                 barChart.setNoDataText("No expense data to display.")
                 return@launch
             }
 
-            // Prepare data entries and labels
             val entries = ArrayList<BarEntry>()
             val labels = ArrayList<String>()
             var index = 0f
@@ -70,36 +68,35 @@ class CategoryGraphActivity : AppCompatActivity() {
                 index++
             }
 
-            // Setup bar dataset
             val barDataSet = BarDataSet(entries, "Spent")
             barDataSet.color = ContextCompat.getColor(this@CategoryGraphActivity, R.color.teal_700)
             barDataSet.valueTextSize = 12f
 
-            // Prepare bar data
             val data = BarData(barDataSet)
             data.barWidth = 0.9f
             barChart.data = data
             barChart.setFitBars(true)
 
-            // Setup X-axis
             val xAxis = barChart.xAxis
             xAxis.valueFormatter = IndexAxisValueFormatter(labels)
             xAxis.position = XAxis.XAxisPosition.BOTTOM
             xAxis.granularity = 1f
+            xAxis.isGranularityEnabled = true
             xAxis.setDrawGridLines(false)
-            xAxis.labelRotationAngle = -45f
-            xAxis.setLabelCount(labels.size, true)
-            xAxis.textSize = 12f
+            xAxis.labelRotationAngle = -60f
+            xAxis.setLabelCount(labels.size, false)
+            xAxis.textSize = 10f
             xAxis.axisMinimum = -0.5f
             xAxis.axisMaximum = entries.size - 0.5f
+            xAxis.spaceMin = 0.5f // ✅ added spacing to the left
+            xAxis.spaceMax = 0.5f // ✅ added spacing to the right
 
-            // Setup Y-axis
+
             val yAxis = barChart.axisLeft
             yAxis.axisMinimum = 0f
             yAxis.textSize = 12f
             barChart.axisRight.isEnabled = false
 
-            // Clear old lines and add goal lines
             yAxis.removeAllLimitLines()
             goal?.let {
                 val minLine = LimitLine(it.minGoal.toFloat(), "Min Goal")
@@ -114,10 +111,25 @@ class CategoryGraphActivity : AppCompatActivity() {
                 yAxis.addLimitLine(maxLine)
             }
 
-            // Final chart setup
+            // Adjust width for horizontal scroll (as you had)
+            val barWidthInPixels = 110
+            val totalWidth = (labels.size * barWidthInPixels).coerceAtLeast(barChart.width)
+            barChart.layoutParams.width = totalWidth
+            barChart.requestLayout()
+
+            // Move the legend down
+            val legend = barChart.legend
+            legend.verticalAlignment = com.github.mikephil.charting.components.Legend.LegendVerticalAlignment.BOTTOM
+            legend.horizontalAlignment = com.github.mikephil.charting.components.Legend.LegendHorizontalAlignment.CENTER
+            legend.orientation = com.github.mikephil.charting.components.Legend.LegendOrientation.HORIZONTAL
+            legend.setDrawInside(false)
+            legend.textSize = 12f
+
             barChart.description.isEnabled = false
             barChart.animateY(1000)
             barChart.invalidate()
         }
     }
+
+
 }
