@@ -41,6 +41,9 @@ interface ExpenseDao {
 """)
     suspend fun getCategoryTotalsForUser(userId: String): List<CategoryTotal>
 
+    @Query("SELECT category, SUM(amount) as totalAmount FROM expenses WHERE userId = :userId AND date BETWEEN :startDate AND :endDate GROUP BY category")
+    suspend fun getCategoryTotalsForUserAndDateRange(userId: String, startDate: String, endDate: String): List<CategoryTotal>
+
 
 }
 //GeeksforGeeks, 2021.How to Perform CRUD Operations in Room Database in Android? [online] Available at: https://www.geeksforgeeks.org/how-to-perform-crud-operations-in-room-database-in-android/ (Accessed 28 April 2025)
