@@ -49,6 +49,11 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, GoalSettingsActivity::class.java)
             startActivity(intent)
         }
+        // Redirect to CategoryGraphActivity (new)
+        binding.buttonShowCategoryGraph.setOnClickListener {
+            val intent = Intent(this, CategoryGraphActivity::class.java)
+            startActivity(intent)
+        }
 
     }
 }

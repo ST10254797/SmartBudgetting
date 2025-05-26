@@ -41,7 +41,7 @@ class ExpenseActivity : AppCompatActivity() {
     private lateinit var startDateEditText: EditText
     private lateinit var endDateEditText: EditText
     private lateinit var filterDateButton: Button
-    private lateinit var btnShowCategoryGraph: Button
+
 
     private var imageUrl: String? = null
     private var selectedCategoryId: Long = -1
@@ -78,7 +78,7 @@ class ExpenseActivity : AppCompatActivity() {
         startDateEditText = findViewById(R.id.startDateEditText)
         endDateEditText = findViewById(R.id.endDateEditText)
         filterDateButton = findViewById(R.id.filterDateButton)
-        btnShowCategoryGraph = findViewById(R.id.btnShowCategoryGraph)
+
 
         goalDao = appDatabase.goalDao()
         budgetWarningTextView = findViewById(R.id.budgetWarningTextView)
@@ -115,11 +115,6 @@ class ExpenseActivity : AppCompatActivity() {
 
         endDateEditText.setOnClickListener {
             showDatePicker(endDateEditText)
-        }
-        btnShowCategoryGraph.setOnClickListener {
-            // Launch your graph activity or show a dialog
-            val intent = Intent(this, CategoryGraphActivity::class.java)
-            startActivity(intent)
         }
 
     }

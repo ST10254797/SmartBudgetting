@@ -220,14 +220,6 @@
                     android:backgroundTint="#BDBDBD"
                     android:textColor="#000000" />
             </LinearLayout>
-            <Button
-                android:id="@+id/btnShowCategoryGraph"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:text="Show Category Graph"
-                android:layout_marginTop="8dp"
-                android:backgroundTint="#43A047"
-                android:textColor="#FFFFFF" />
 
             <!-- Return Button -->
             <LinearLayout
@@ -245,6 +237,7 @@
                     android:backgroundTint="#43A047"
                     android:textColor="#FFFFFF" />
             </LinearLayout>
+
         </LinearLayout>
     </LinearLayout>
 </ScrollView>
