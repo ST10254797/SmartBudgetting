@@ -41,7 +41,13 @@ interface ExpenseDao {
 """)
     suspend fun getCategoryTotalsForUser(userId: String): List<CategoryTotal>
 
-    @Query("SELECT category, SUM(amount) as totalAmount FROM expenses WHERE userId = :userId AND date BETWEEN :startDate AND :endDate GROUP BY category")
+    @Query("""
+    SELECT c.name AS category, SUM(e.amount) AS totalAmount
+    FROM expenses e
+    INNER JOIN categories c ON e.category = c.id
+    WHERE e.userId = :userId AND e.date BETWEEN :startDate AND :endDate
+    GROUP BY c.name
+""")
     suspend fun getCategoryTotalsForUserAndDateRange(userId: String, startDate: String, endDate: String): List<CategoryTotal>
 
 
