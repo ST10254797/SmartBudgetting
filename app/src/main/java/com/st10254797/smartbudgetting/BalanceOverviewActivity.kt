@@ -15,6 +15,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
+import com.github.mikephil.charting.formatter.PercentFormatter
+import android.text.Html
+import android.text.method.LinkMovementMethod
 
 class BalanceOverviewActivity : AppCompatActivity() {
 
@@ -50,6 +53,8 @@ class BalanceOverviewActivity : AppCompatActivity() {
             val categories = categoryDao.getAllCategories()
             val goal = goalDao.getGoalForUser(userId)
 
+            val categoryMap = categories.associateBy { it.id } // Map categoryId -> Category
+
             val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             val thisMonth = Calendar.getInstance().apply {
                 set(Calendar.DAY_OF_MONTH, 1)
@@ -62,7 +67,7 @@ class BalanceOverviewActivity : AppCompatActivity() {
 
             val totalSpent = thisMonthExpenses.sumOf { it.amount }
             val categorySums = thisMonthExpenses.groupBy { expense ->
-                categories.find { it.id == expense.category }?.name ?: "Unknown"
+                categoryMap[expense.category]?.name ?: "Unknown"
             }.mapValues { (_, v) -> v.sumOf { it.amount } }
 
             withContext(Dispatchers.Main) {
@@ -73,29 +78,89 @@ class BalanceOverviewActivity : AppCompatActivity() {
         }
     }
 
+
+
+
     private fun updatePieChart(dataMap: Map<String, Double>) {
-        val entries = dataMap.map { (category, amount) ->
-            PieEntry(amount.toFloat(), category)
+        // Show max 10 slices (9 categories + Others)
+        val maxCategories = 10
+
+        val sortedEntries = dataMap.entries.sortedByDescending { it.value }
+
+        val entries = mutableListOf<PieEntry>()
+
+        if (sortedEntries.size <= maxCategories) {
+            sortedEntries.forEach { (category, amount) ->
+                entries.add(PieEntry(amount.toFloat(), category))
+            }
+        } else {
+            val topCategories = sortedEntries.take(maxCategories - 1) // top 9
+            val others = sortedEntries.drop(maxCategories - 1) // rest
+
+            topCategories.forEach { (category, amount) ->
+                entries.add(PieEntry(amount.toFloat(), category))
+            }
+
+            val othersSum = others.sumOf { it.value }
+            entries.add(PieEntry(othersSum.toFloat(), "Others"))
         }
 
         val dataSet = PieDataSet(entries, "Expenses by Category").apply {
-            setColors(*intArrayOf(
-                android.graphics.Color.BLUE,
-                android.graphics.Color.RED,
-                android.graphics.Color.GREEN,
-                android.graphics.Color.MAGENTA,
-                android.graphics.Color.CYAN
-            ))
+            setColors(
+                android.graphics.Color.rgb(244, 67, 54),
+                android.graphics.Color.rgb(33, 150, 243),
+                android.graphics.Color.rgb(76, 175, 80),
+                android.graphics.Color.rgb(255, 193, 7),
+                android.graphics.Color.rgb(156, 39, 176),
+                android.graphics.Color.rgb(0, 150, 136),
+                android.graphics.Color.rgb(255, 87, 34),
+                android.graphics.Color.rgb(121, 85, 72),
+                android.graphics.Color.rgb(63, 81, 181),
+                android.graphics.Color.rgb(189, 189, 189) // Others color (gray)
+            )
             valueTextSize = 14f
+            valueTextColor = android.graphics.Color.WHITE
+            sliceSpace = 3f
+            selectionShift = 8f
+            setDrawValues(true)
+            valueFormatter = PercentFormatter(pieChart)
         }
 
         pieChart.apply {
             data = PieData(dataSet)
             description.isEnabled = false
-            centerText = "Spending Split"
-            animateY(1000)
+
+            isDrawHoleEnabled = true
+            holeRadius = 45f
+            transparentCircleRadius = 50f
+            setHoleColor(android.graphics.Color.WHITE)
+
+            setCenterText("Spending Split")
+            setCenterTextSize(18f)
+            setCenterTextColor(android.graphics.Color.DKGRAY)
+
+            setUsePercentValues(true)
+            setDrawEntryLabels(true)
+            setEntryLabelColor(android.graphics.Color.BLACK)
+            legend.textColor = android.graphics.Color.WHITE
+            setEntryLabelTextSize(12f)
+            setExtraOffsets(10f, 10f, 10f, 10f)
+
+            legend.apply {
+                isEnabled = true
+                textSize = 14f
+                form = com.github.mikephil.charting.components.Legend.LegendForm.CIRCLE
+                verticalAlignment = com.github.mikephil.charting.components.Legend.LegendVerticalAlignment.BOTTOM
+                horizontalAlignment = com.github.mikephil.charting.components.Legend.LegendHorizontalAlignment.CENTER
+                orientation = com.github.mikephil.charting.components.Legend.LegendOrientation.HORIZONTAL
+                setDrawInside(false)
+                isWordWrapEnabled = true // ✅ This is the correct way
+            }
+
+            animateY(1400, com.github.mikephil.charting.animation.Easing.EaseInOutQuad)
             invalidate()
         }
+
     }
 
     private fun updateProgressBar(totalSpent: Double, goal: Goal?) {
@@ -111,15 +176,16 @@ class BalanceOverviewActivity : AppCompatActivity() {
         val daysLeft = Calendar.getInstance().getActualMaximum(Calendar.DAY_OF_MONTH) -
                 Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
 
-        val summary = buildString {
-            append("💸 Spent This Month: R%.2f\n".format(totalSpent))
+        val htmlSummary = buildString {
+            append("💸 <b>Spent This Month:</b> R%.2f<br/><br/>".format(totalSpent))
             if (goal != null) {
-                append("📉 Min Goal: R${goal.minGoal}\n")
-                append("📈 Max Goal: R${goal.maxGoal}\n")
+                append("📉 <b>Min Goal:</b> R${goal.minGoal}<br/>")
+                append("📈 <b>Max Goal:</b> R${goal.maxGoal}<br/><br/>")
             }
-            append("📅 Days Left: $daysLeft")
+            append("📅 <b>Days Left:</b> $daysLeft")
         }
 
-        summaryTextView.text = summary
+        summaryTextView.text = Html.fromHtml(htmlSummary, Html.FROM_HTML_MODE_LEGACY)
+        summaryTextView.movementMethod = LinkMovementMethod.getInstance() // optional if you have links
     }
 }
