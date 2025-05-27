@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:cardview="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
-    android:padding="16dp">
+    android:padding="20dp">
 
   <LinearLayout
       android:layout_width="match_parent"
@@ -17,36 +18,36 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="📊 Balance Overview"
-        android:textSize="22sp"
+        android:textSize="26sp"
         android:textStyle="bold"
         android:textColor="@color/white"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginBottom="24dp" />
 
     <!-- Card for Pie Chart -->
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        cardview:cardCornerRadius="12dp"
-        cardview:cardElevation="8dp"
-        android:layout_marginBottom="24dp"
-        android:padding="16dp"
+        cardview:cardCornerRadius="16dp"
+        cardview:cardElevation="12dp"
+        android:layout_marginBottom="28dp"
+        android:padding="20dp"
         android:background="@color/white">
 
       <com.github.mikephil.charting.charts.PieChart
           android:id="@+id/pieChart"
           android:layout_width="match_parent"
-          android:layout_height="500dp" />
+          android:layout_height="450dp" />
     </androidx.cardview.widget.CardView>
 
     <!-- Card for Budget Usage -->
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        cardview:cardCornerRadius="12dp"
-        cardview:cardElevation="8dp"
-        android:layout_marginBottom="24dp"
-        android:padding="16dp"
+        cardview:cardCornerRadius="16dp"
+        cardview:cardElevation="10dp"
+        android:layout_marginBottom="28dp"
+        android:padding="20dp"
         android:background="@color/white">
 
       <LinearLayout
@@ -60,22 +61,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Budget Usage"
-            android:textSize="16sp"
+            android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="@color/black"
             android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="12dp" />
 
-        <!-- Progress Bar -->
+        <!-- Progress Bar with rounded corners -->
         <ProgressBar
             android:id="@+id/budgetProgressBar"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
-            android:layout_height="20dp"
+            android:layout_height="24dp"
             android:progress="0"
             android:max="100"
             android:progressTint="@color/green"
-            android:background="@android:color/darker_gray" />
+            android:background="@drawable/progressbar_background"
+            android:indeterminate="false" />
       </LinearLayout>
     </androidx.cardview.widget.CardView>
 
@@ -83,50 +85,53 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        cardview:cardCornerRadius="12dp"
-        cardview:cardElevation="8dp"
-        android:padding="16dp"
+        cardview:cardCornerRadius="16dp"
+        cardview:cardElevation="10dp"
+        android:padding="20dp"
         android:background="@color/white">
 
       <LinearLayout
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:orientation="vertical">
+          android:orientation="vertical"
+          android:gravity="center_horizontal">
 
-        <!-- Budget Status (moved above summary and styled) -->
+        <!-- Budget Status -->
         <TextView
             android:id="@+id/budgetStatusTextView"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Budget status will appear here"
-            android:textSize="18sp"
+            android:textSize="20sp"
             android:textStyle="bold"
-            android:textAlignment="center"
-            android:layout_marginBottom="16dp"
-            android:textColor="@android:color/holo_red_dark" />
+            android:textColor="@android:color/holo_red_dark"
+            android:layout_marginBottom="18dp" />
 
         <!-- Summary Text -->
         <TextView
             android:id="@+id/summaryTextView"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/black"
             android:textSize="16sp"
-            android:textStyle="bold" />
-
+            android:textStyle="bold"
+            android:textAlignment="center" />
       </LinearLayout>
     </androidx.cardview.widget.CardView>
-    <Button
+
+    <!-- Generate Report Button with Material styling -->
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/generateReportButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Generate Report"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        android:backgroundTint="@color/teal_700"
-        android:textColor="@android:color/white"/>
-
-
-
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="24dp"
+        android:textColor="@android:color/white"
+        app:cornerRadius="12dp"
+        app:backgroundTint="@color/teal_700"
+        app:icon="@drawable/ic_report"
+        app:iconGravity="textStart"
+        app:iconPadding="8dp" />
   </LinearLayout>
 </ScrollView>
