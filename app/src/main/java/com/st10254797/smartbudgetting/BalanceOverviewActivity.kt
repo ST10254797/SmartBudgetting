@@ -117,8 +117,10 @@ class BalanceOverviewActivity : AppCompatActivity() {
             val others = sortedEntries.drop(maxCategories - 1) // rest
 
             topCategories.forEach { (category, amount) ->
-                entries.add(PieEntry(amount.toFloat(), category))
+                val shortenedLabel = if (category.length > 12) category.take(10) + "..." else category
+                entries.add(PieEntry(amount.toFloat(), shortenedLabel))
             }
+
 
             val othersSum = others.sumOf { it.value }
             entries.add(PieEntry(othersSum.toFloat(), "Others"))
