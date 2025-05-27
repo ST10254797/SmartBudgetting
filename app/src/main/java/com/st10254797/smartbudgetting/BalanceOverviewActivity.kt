@@ -19,6 +19,15 @@ import com.github.mikephil.charting.formatter.PercentFormatter
 import android.text.Html
 import android.text.method.LinkMovementMethod
 import com.github.mikephil.charting.components.Legend
+import android.widget.Button
+import android.os.Environment
+import android.widget.Toast
+import java.io.File
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.pdf.PdfDocument
+import java.io.FileOutputStream
+import android.graphics.Typeface
 
 
 class BalanceOverviewActivity : AppCompatActivity() {
@@ -32,6 +41,8 @@ class BalanceOverviewActivity : AppCompatActivity() {
     private lateinit var categoryDao: CategoryDao
     private lateinit var goalDao: GoalDao
     private lateinit var budgetStatusTextView: TextView
+    private lateinit var generateReportButton: Button
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +57,13 @@ class BalanceOverviewActivity : AppCompatActivity() {
         expenseDao = appDatabase.expenseDao()
         categoryDao = appDatabase.categoryDao()
         goalDao = appDatabase.goalDao()
+        generateReportButton = findViewById(R.id.generateReportButton)
 
+        generateReportButton.setOnClickListener {
+            lifecycleScope.launch {
+                generateAndSavePdfReport()
+            }
+        }
         loadData()
     }
 
@@ -217,5 +234,103 @@ class BalanceOverviewActivity : AppCompatActivity() {
         summaryTextView.text = Html.fromHtml(htmlSummary, Html.FROM_HTML_MODE_LEGACY)
         summaryTextView.movementMethod = LinkMovementMethod.getInstance() // optional if you have links
     }
+    private fun generateAndSavePdfReport() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@launch
+            val expenses = expenseDao.getExpensesByUser(userId)
+            val categories = categoryDao.getAllCategories()
+            val goal = goalDao.getGoalForUser(userId)
+
+            val categoryMap = categories.associateBy { it.id }
+
+            val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val thisMonth = Calendar.getInstance().apply {
+                set(Calendar.DAY_OF_MONTH, 1)
+            }.time
+
+            val thisMonthExpenses = expenses.filter {
+                val expenseDate = sdf.parse(it.date)
+                expenseDate != null && !expenseDate.before(thisMonth)
+            }
+
+            val totalSpent = thisMonthExpenses.sumOf { it.amount }
+
+            val categoryTotals = thisMonthExpenses.groupBy { expense ->
+                categoryMap[expense.category]?.name ?: "Unknown"
+            }.mapValues { (_, v) -> v.sumOf { it.amount } }
+
+            val daysLeft = Calendar.getInstance().getActualMaximum(Calendar.DAY_OF_MONTH) -
+                    Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
+
+            withContext(Dispatchers.Main) {
+                generatePdfReport(categoryTotals, totalSpent, goal, daysLeft)
+            }
+        }
+    }
+
+    private fun generatePdfReport(
+        categoryTotals: Map<String, Double>,
+        totalSpent: Double,
+        goal: Goal?,
+        daysLeft: Int
+    ) {
+        val document = PdfDocument()
+        val pageInfo = PdfDocument.PageInfo.Builder(300, 600, 1).create()
+        val page = document.startPage(pageInfo)
+        val canvas: Canvas = page.canvas
+
+        val titlePaint = Paint().apply {
+            textSize = 14f
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+        }
+
+        val textPaint = Paint().apply {
+            textSize = 12f
+        }
+
+        var y = 20
+        canvas.drawText("📊 Monthly Expense Report", 10f, y.toFloat(), titlePaint)
+        y += 25
+
+        canvas.drawText("Total Spent: R%.2f".format(totalSpent), 10f, y.toFloat(), textPaint)
+        y += 20
+
+        goal?.let {
+            canvas.drawText("Min Goal: R${it.minGoal}", 10f, y.toFloat(), textPaint)
+            y += 20
+            canvas.drawText("Max Goal: R${it.maxGoal}", 10f, y.toFloat(), textPaint)
+            y += 20
+        }
+
+        canvas.drawText("Days Left: $daysLeft", 10f, y.toFloat(), textPaint)
+        y += 30
+
+        canvas.drawText("Expenses by Category:", 10f, y.toFloat(), titlePaint)
+        y += 20
+
+        categoryTotals.forEach { (category, amount) ->
+            val line = "- $category: R%.2f".format(amount)
+            canvas.drawText(line, 10f, y.toFloat(), textPaint)
+            y += 18
+        }
+
+        document.finishPage(page)
+
+        val now = SimpleDateFormat("MMM-yyyy", Locale.getDefault()).format(Date())
+        val fileName = "MonthlyReport_$now.pdf"
+        val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+        val file = File(downloadsDir, fileName)
+
+        try {
+            document.writeTo(FileOutputStream(file))
+            Toast.makeText(this, "✅ Report saved to Downloads: ${file.absolutePath}", Toast.LENGTH_LONG).show()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this, "❌ Failed to save PDF: ${e.message}", Toast.LENGTH_LONG).show()
+        }
+
+        document.close()
+    }
+
 
 }

@@ -116,6 +116,15 @@
 
       </LinearLayout>
     </androidx.cardview.widget.CardView>
+    <Button
+        android:id="@+id/generateReportButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Generate Report"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/teal_700"
+        android:textColor="@android:color/white"/>
 
 
 
