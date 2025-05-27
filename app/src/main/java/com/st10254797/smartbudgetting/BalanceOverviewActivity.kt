@@ -18,6 +18,8 @@ import java.util.*
 import com.github.mikephil.charting.formatter.PercentFormatter
 import android.text.Html
 import android.text.method.LinkMovementMethod
+import com.github.mikephil.charting.components.Legend
+
 
 class BalanceOverviewActivity : AppCompatActivity() {
 
@@ -78,9 +80,6 @@ class BalanceOverviewActivity : AppCompatActivity() {
         }
     }
 
-
-
-
     private fun updatePieChart(dataMap: Map<String, Double>) {
         // Show max 10 slices (9 categories + Others)
         val maxCategories = 10
@@ -105,7 +104,7 @@ class BalanceOverviewActivity : AppCompatActivity() {
             entries.add(PieEntry(othersSum.toFloat(), "Others"))
         }
 
-        val dataSet = PieDataSet(entries, "Expenses by Category").apply {
+        val dataSet = PieDataSet(entries, "").apply {
             setColors(
                 android.graphics.Color.rgb(244, 67, 54),
                 android.graphics.Color.rgb(33, 150, 243),
@@ -142,19 +141,24 @@ class BalanceOverviewActivity : AppCompatActivity() {
             setUsePercentValues(true)
             setDrawEntryLabels(true)
             setEntryLabelColor(android.graphics.Color.BLACK)
-            legend.textColor = android.graphics.Color.WHITE
+            legend.textColor = android.graphics.Color.BLACK
             setEntryLabelTextSize(12f)
-            setExtraOffsets(10f, 10f, 10f, 10f)
+            pieChart.setExtraOffsets(40f, 20f, 40f, 80f) // increase left and bottom offset
 
             legend.apply {
                 isEnabled = true
                 textSize = 14f
-                form = com.github.mikephil.charting.components.Legend.LegendForm.CIRCLE
-                verticalAlignment = com.github.mikephil.charting.components.Legend.LegendVerticalAlignment.BOTTOM
-                horizontalAlignment = com.github.mikephil.charting.components.Legend.LegendHorizontalAlignment.CENTER
-                orientation = com.github.mikephil.charting.components.Legend.LegendOrientation.HORIZONTAL
-                setDrawInside(false)
-                isWordWrapEnabled = true // ✅ This is the correct way
+                form = Legend.LegendForm.CIRCLE
+
+                setDrawInside(false)  // keep legend outside pie chart but inside view
+                verticalAlignment = Legend.LegendVerticalAlignment.BOTTOM
+                horizontalAlignment = Legend.LegendHorizontalAlignment.LEFT
+                orientation = Legend.LegendOrientation.HORIZONTAL
+                isWordWrapEnabled = true
+
+                yOffset = 6f  // move legend slightly up
+                xEntrySpace = 10f // horizontal spacing between legend entries
+                xOffset = -60f
             }
 
             animateY(1400, com.github.mikephil.charting.animation.Easing.EaseInOutQuad)
