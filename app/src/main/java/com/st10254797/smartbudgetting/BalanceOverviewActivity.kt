@@ -31,6 +31,7 @@ class BalanceOverviewActivity : AppCompatActivity() {
     private lateinit var expenseDao: ExpenseDao
     private lateinit var categoryDao: CategoryDao
     private lateinit var goalDao: GoalDao
+    private lateinit var budgetStatusTextView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +40,7 @@ class BalanceOverviewActivity : AppCompatActivity() {
         pieChart = findViewById(R.id.pieChart)
         progressBar = findViewById(R.id.budgetProgressBar)
         summaryTextView = findViewById(R.id.summaryTextView)
+        budgetStatusTextView = findViewById(R.id.budgetStatusTextView)
 
         appDatabase = AppDatabase.getDatabase(this)
         expenseDao = appDatabase.expenseDao()
@@ -76,6 +78,7 @@ class BalanceOverviewActivity : AppCompatActivity() {
                 updatePieChart(categorySums)
                 updateProgressBar(totalSpent, goal)
                 updateSummary(totalSpent, goal)
+                updateBudgetStatus(totalSpent, goal)
             }
         }
     }
@@ -175,6 +178,28 @@ class BalanceOverviewActivity : AppCompatActivity() {
             progressBar.progress = 0
         }
     }
+    private fun updateBudgetStatus(totalSpent: Double, goal: Goal?) {
+        if (goal == null || goal.maxGoal <= 0) {
+            budgetStatusTextView.text = "No budget goal set"
+            budgetStatusTextView.setTextColor(android.graphics.Color.GRAY)
+            return
+        }
+
+        when {
+            totalSpent > goal.maxGoal -> {
+                budgetStatusTextView.text = "⚠️ You are OVER budget!"
+                budgetStatusTextView.setTextColor(android.graphics.Color.RED)
+            }
+            totalSpent < goal.minGoal -> {
+                budgetStatusTextView.text = "✅ You are UNDER budget!"
+                budgetStatusTextView.setTextColor(android.graphics.Color.GREEN)
+            }
+            else -> {
+                budgetStatusTextView.text = "⚠️ You are WITHIN budget range."
+                budgetStatusTextView.setTextColor(android.graphics.Color.parseColor("#FFA500")) // Orange
+            }
+        }
+    }
 
     private fun updateSummary(totalSpent: Double, goal: Goal?) {
         val daysLeft = Calendar.getInstance().getActualMaximum(Calendar.DAY_OF_MONTH) -
@@ -192,4 +217,5 @@ class BalanceOverviewActivity : AppCompatActivity() {
         summaryTextView.text = Html.fromHtml(htmlSummary, Html.FROM_HTML_MODE_LEGACY)
         summaryTextView.movementMethod = LinkMovementMethod.getInstance() // optional if you have links
     }
+
 }
